@@ -1,1 +1,142 @@
+#Financial Performance Report (Past 5 Years): Apple vs Microsoft vs Alphabet 
 
+Companies: Apple(AAPL), Microsoft(MSFT), Alphabet(GOOG)
+Window: Last 5 year fiscal years available in the dataset
+Objectives: Compare growth, profitability, cash generation, and balance-sheet strength across the three firms.
+
+# Questions this notebook answers 
+1.Which company grew fastest (Revenue, NetIncome, FCF)?
+2.Which company generates the best profitability (Margins)?
+3.Which company looks safest from a balance-sheet view (Net cash, leverage)?
+
+Project structure (what's in this repo)
+## (What's in this repo)
+
+- **Main analysis notebook:** `/<Fianancial_Performance(1)>.ipynb`
+Contains the full code pipeline: data pull -> KPI computation -> plots.
+
+- **Viewer report notebook:** `<notebook>`
+Contains a readable walkthrough of what was done and why, plus key results.
+
+- **Readme:** `/.md/`
+Contains a walkthrough of the sources and tools used.
+
+End-to-end workflow
+## End-to-end workflow (what I did)
+
+1. **Acquire data**
+   - Pulled annual financial statement line items for AAPL / MSFT / GOOG.
+   - Standardized the fiscal-year label to the statement end-date year.
+
+2. **Clean & standardize**
+   - Converted all numeric fields to numeric dtype.
+   - Standardized sign conventions (especially CapEx, if needed).
+   - Ensured consistent column names across companies.
+
+3. **Engineer metrics (KPIs)**
+   - Computed margins and return/leverage ratios.
+   - Computed YoY growth and 5-year growth measures (where applicable).
+
+4. **Compare companies**
+   - Produced a snapshot comparison table (latest fiscal year).
+   - Produced trend charts for growth/profitability/leverage.
+
+5. **Interpretation**
+   - Summarized “who wins” and added caveats (fiscal year alignment, buybacks affecting ROE, etc.).
+
+Data details
+
+## Data acquisition
+
+**source:** (yfinance / SEC fillings / annual reports)
+**Frequency** Annual(last 5 years available)
+
+**Why annual?**
+- Annual data is simpler to align across companies and avoids quarter-to-quarter noise.
+
+**Important cavest**
+- Apple, Microsoft, and Alphabet have different fiscal year ends, so "FY2024" does not represent the same calendar window across companies.
+
+Data definition
+
+## Dataset used
+
+This notebook uses `data/financials_annual.csv` with one row per **company x fiscal_year**.
+
+**columns**
+- **Income statement:** `revenue`, `gross_profit`, `net_income`, `net_profit_margin`
+
+- **Cash Flow:** `fcf` (Free Cash Flow)
+
+- **Balance sheet:** `total_liabilities`,`shareholders_equity`, `total_assets`, `debt_to_equity`
+
+- **Returns:** `roe` (Return on Equity)
+
+**Note**
+-Fiscal year ends differ: Apple(~Sep), Microsoft (~Jun), Alphabet (~Dec).
+-Comparisons are still meaningful, but fiscl years do not algin perfectly to the same calendar months.
+
+KPI Layer (Metric definitions)
+
+## Metric definitions (how we calculate things)
+
+- **YoY growth (Revenue / Net Income / FCF)**
+\[
+\text{YoY}= /frac{X_{t-1}}{X_{t-1}}
+\]
+
+- **Net Profit Margin**
+\[
+\text{Net Profit Margin} = \frac{\text{Net Income}}{\text{Revenue}}
+\]
+
+-**ROE (Return on Equity)**
+\[
+\text{ROE} = \frac{\text{Net Income}}{\text{Shareholders' Equity}}    
+\]
+
+-**Debt-to-Equity**
+\[
+\text{Debt-to-Equity} = \frac{\text{Total Debt}}{\text{Shareholders' Equity}}    
+\]
+(If your dataset uses total liabilities instead of total debt, note that it will overstate leverage.)
+
+-**Net cash (if available)**
+\[
+\text{Net Cash} = \text{Cash \& Equivalents} - \text{Total Debt}  
+\]
+
+Results plan
+
+## Analysis plan 
+1. **Data sanity checks** (missing values, outliners, sign conventions)
+2. **KPI table** (latest year snapshot + 5-year CAGR)
+3. **Trend plots** (Revenue, Net Income, FCF, Margins, ROE, leverage)
+4. **Conclusions** (who wins on growth, profitability, safety)
+
+Finding skeleton
+
+## Findings 
+
+- **Growth:** MSFT Net margin 36.1% > GOOG 28.6% > APPL 24.0%
+- **Profitability:** MSFT:Best profitability(36%) with strong ROE~33% and high quality earnings, balanced sheet.
+- **Capital efficieny(ROE):** ROE reality check: AAPL 157% is inflated by a tiny equity base from massive buybacks and not economically comparable.
+
+## Limitations
+
+- **Fiscal year mismatch:** FY labels do not represent the same calendar months across companies.
+- **Accounting differences:** Business models differ (ads/software/hardware), so margins are structurally different.
+- **Data-source mapping:** Some line-items may be missing or renamed depending on source; this can affect debt/equity and cash definitions.
+- **ROE distortion:** Equity shrinkage (buybacks) can inflate ROE; it should not be used alone.
+
+## How to Reproduce
+
+1.Open and run the main notebook: `/<Your_Main_Notebook>.ipynb`
+2.Confirm the dataset exists: `/data/financials_annual.csv`
+3.Run the KPI + plotting cells to regenrate the figures/tables.
+
+References
+## References
+
+-Apple / Microsoft / Alphabet investor relations annual filings 
+-Data provider documentation (e.g, yfinance statement fields), if used
